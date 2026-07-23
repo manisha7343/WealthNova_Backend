@@ -1,74 +1,109 @@
 const mongoose = require("mongoose");
 
+
 const userSchema = new mongoose.Schema({
-    first_name: {
+    firstName: 
+    {
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
-    last_name: {
-        type: String,
-    },
-    email: {
+
+    username: 
+    {
         type: String,
         required: true,
         unique: true,
+        lowercase: true,
+        trim: true,
+    },
+
+    email: 
+    {
+        type: String,
+        required: true,
+        unique: true,
+        lowercase: true,
+        trim: true,
         index: true  
     },
-    profilePic: {
-    type: String,
-    default: "" // Shuruat me khali rahega jab tak user khud upload na kare
-    },
-    password: {
+
+    profilePic: 
+    {
         type: String,
-        required: true
+        default: null // Shuruat me khali rahega jab tak user khud upload na kare
+    },
+
+    password: 
+    {
+        type: String,
+        required: true,
+        select: false
+    },
+
+    provider:
+    {
+        type: String,
+        enum: ["local", "google"],
+        default: "local"
+
+    },
+
+    providerId:
+    {
+        type: String,
+        default: null
+
+    },
+
+    role:
+    {
+        type: String,
+        enum: ["user", "admin"],
+        default: "user"
+        
     },
 
     //------------ verify email ---------------
-    isEmailVerified: {
-        type: Boolean,
-        default: false
-    },
-    verifyEmailOtp: {
+    refreshToken:
+    {
         type: String,
-        default: null
+        default: null,
+        select: false,
     },
-    verifyEmailOtpExpiry: {
+
+    lastLogin:
+    {
         type: Date,
         default: null
-    },
-    lastVerifyEmailOtpSentAt:{
-        type:Date,
-        default:null
+
     },
 
     //--------------- 3 failed login attempts ----------
-    isBlocked: {
+    isBlocked: 
+    {
         type: Boolean,
         default: false, 
     },
-    loginAttemps: {
+
+    loginAttempts: 
+    {
         type: Number,
         default: 0
     },
-    blockedUntill: {
+
+    blockedUntil: 
+    {
         type: Date,
         default: null 
     },
     
-    //---------- forget password -------------------
-    resetPasswordOtp: {
-        type: String,
-        default: null
-    },
-    resetPasswordOtpExpiry: {
-        type: Date,
-        default: null
-    },
-    lastResetPasswordOtpSentAt:{
-        type: Date,
-        default: null
+    //---------------------------------------------------
+    isDeleted:
+    {
+        type: Boolean,
+        default: false
     }
-    
     
 }, { timestamps: true });
 
