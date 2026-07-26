@@ -44,5 +44,8 @@ router.post("/forget-password", preAuthRateLimiter,forgetPasswordValidation, for
 // reset password
 router.post("/reset-password", preAuthRateLimiter, resetPasswordValidation, resetPassword);
 
+// OAuth
+// router.post("/OAuth", OAuth);
+
 
 module.exports = router;

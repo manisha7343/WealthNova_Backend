@@ -10,9 +10,6 @@ const redis = require("../config/redis")
 
 // #######################   register user  ######################
 
-
-
-
 //OK
 const registerUser = async (req, res) => {
   try {
@@ -43,7 +40,7 @@ const registerUser = async (req, res) => {
 
     console.log(result);
     
-    //------------ otp for email verifiction ----------------
+  //------------ otp for email verifiction ----------------
 
     //generating OTP
 
@@ -280,7 +277,7 @@ const loginUser = async (req, res) => {
       });
     }
 
-    //---------------- 3 attepts----------------------------------------------
+  //---------------- 3 attepts----------------------------------------------
 
     /// 1. Sabse pehle Block Check karo (Gatekeeper)
     if (user.isBlocked) {
@@ -318,12 +315,17 @@ const loginUser = async (req, res) => {
       await user.save();
     }
 
-    //----------------------------------
+  //----------------------------------
 
     // 4. jwt token Generate
-    const token = jwt.sign({ userId: user._id }, process.env.KEY, {
-      expiresIn: "1d",
-    });
+    const token = jwt.sign
+    (
+        { userId: user._id }, // user info
+        process.env.KEY,  //website key
+        {
+          expiresIn: "1d", //expiry
+        }
+    );
 
     //terminal
     if (token) {
@@ -523,13 +525,13 @@ module.exports = {
 
 // 2...user find karo by email (Db me)
 
-// 3...agar user nahi â  "user not found"
+// 3...agar user nahi ï¿½  "user not found"
 
 // 4...bcrypt.compare(password, user.password)
 
-// 5...agar false â  invalid user or passward
+// 5...agar false ï¿½  invalid user or passward
 
-// 6...agar true â JWT token generate
+// 6...agar true ï¿½ JWT token generate
 
 // 7...respose me token bhejo
 

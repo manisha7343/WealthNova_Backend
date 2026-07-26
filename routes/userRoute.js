@@ -20,8 +20,12 @@ const uploadProfilePicMiddleware = require("../middleware/uploadMiddleware"); //
 router.get("/profile", auth, userRateLimiter, getProfile)
 
 
-// ######### update profile ###############
+// ######### update profile + Delete Profile ###############
 router.put("/profile", auth, UpdateUserValdation, updateProfile)
+
+// ####### change password ##########################
+// router.put("/change-password", auth,  changePassword)
+
 
 //########## multer upload route ##############
 // NAYAA ROUTE YAHAN BANA DIYA

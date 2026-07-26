@@ -1,17 +1,18 @@
 //middleware auth
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
+const { log } = require("node:console");
 
-const auth = (req, res, next) =>{
+const auth = (req, res, next) => {
 
-    //1.header se token lo 
+    //1.header/authoorization se token lo 
     const authHeader = req.headers.accesstoken || req.headers.authorization;
 
     //2.check kro token hai ya nhi 
     if(!authHeader){
-        return res.status(401).json({msg: "access denied. No token"})     
+        return res.status(401).json({msg: "No token. access denied"})     
     }
 
-    //3.token extract (removed the Beare word) 
+    //3.token extract (removed the Beare word and get teh token (0 = bearer 1 = token)) 
     const token = authHeader.split(" ")[1];
     try{
 
@@ -20,6 +21,8 @@ const auth = (req, res, next) =>{
         
             // user req = token me se id jayegi
             req.user = decoded.userId; 
+            console.log("req user ------------------------------ ",req.user );
+            
             
             // next route run hone do
             next();

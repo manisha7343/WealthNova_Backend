@@ -1,8 +1,6 @@
 const mongoose = require("mongoose");
-
-
 const userSchema = new mongoose.Schema({
-    firstName: 
+    fullName: 
     {
         type: String,
         required: true,
@@ -18,7 +16,7 @@ const userSchema = new mongoose.Schema({
         trim: true,
     },
 
-    email: 
+    email:
     {
         type: String,
         required: true,
@@ -41,6 +39,8 @@ const userSchema = new mongoose.Schema({
         select: false
     },
 
+    //------------------ OAuth -----------------------
+
     provider:
     {
         type: String,
@@ -54,14 +54,6 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: null
 
-    },
-
-    role:
-    {
-        type: String,
-        enum: ["user", "admin"],
-        default: "user"
-        
     },
 
     //------------ verify email ---------------
