@@ -7,10 +7,11 @@ const userSchema = new mongoose.Schema({
         trim: true
     },
 
-    username: 
+    userName: 
     {
         type: String,
         required: true,
+        index: true,    
         unique: true,
         lowercase: true,
         trim: true,
@@ -25,6 +26,22 @@ const userSchema = new mongoose.Schema({
         trim: true,
         index: true  
     },
+    password: 
+    {
+        type: String,
+        default: null,
+        required: true,
+        select: false
+    },
+    country:
+    {
+        type: String,
+        required:true,
+        trim: true,
+
+    },
+
+    //---------------------------------------------------------------------------
 
     profilePic: 
     {
@@ -32,44 +49,43 @@ const userSchema = new mongoose.Schema({
         default: null // Shuruat me khali rahega jab tak user khud upload na kare
     },
 
-    password: 
-    {
-        type: String,
-        required: true,
-        select: false
-    },
+    
+
+    //------------ verify email Manual---------------
+
+    // isEmailVerified: {
+    //     type: Boolean,
+    //     default: false
+    // },
+    // verifyEmailOtp: {
+    //     type: String,
+    //     default: null
+    // },
+    // verifyEmailOtpExpiry: {
+    //     type: Date,
+    //     default: null
+    // },
+    // lastVerifyEmailOtpSentAt:{
+    //     type:Date,
+    //     default:null
+    // },
 
     //------------------ OAuth -----------------------
 
-    provider:
-    {
-        type: String,
-        enum: ["local", "google"],
-        default: "local"
+    // provider:
+    // {
+    //     type: String,
+    //     enum: ["local", "google"],
+    //     default: "local"
 
-    },
+    // },
 
-    providerId:
-    {
-        type: String,
-        default: null
+    // providerId:
+    // {
+    //     type: String,
+    //     default: null
 
-    },
-
-    //------------ verify email ---------------
-    refreshToken:
-    {
-        type: String,
-        default: null,
-        select: false,
-    },
-
-    lastLogin:
-    {
-        type: Date,
-        default: null
-
-    },
+    // },
 
     //--------------- 3 failed login attempts ----------
     isBlocked: 
@@ -89,13 +105,22 @@ const userSchema = new mongoose.Schema({
         type: Date,
         default: null 
     },
+    //---------- forget password -------------------
+    // resetPasswordOtp: {
+    //     type: String,
+    //     default: null
+    // },
+    // resetPasswordOtpExpiry: {
+    //     type: Date,
+    //     default: null
+    // },
+    // lastResetPasswordOtpSentAt:{
+    //     type: Date,
+    //     default: null
+    // },
     
     //---------------------------------------------------
-    isDeleted:
-    {
-        type: Boolean,
-        default: false
-    }
+
     
 }, { timestamps: true });
 

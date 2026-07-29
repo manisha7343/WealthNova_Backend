@@ -1,135 +1,77 @@
 const { body , validationResult} = require("express-validator")
 
-//first_name , last_name @ , email , password
+//fullName, userName, email, password
 const registationValidationRules = [
-    body('first_name')
-        .notEmpty().withMessage('first name is required!')
-        .bail()
-        .matches(/^[A-Za-z ]+$/).withMessage('Name must contain only letters')
-        .bail()
-        .isString().withMessage("name must be a string!")
-        .bail()
-        .isLength({ min:2, max:14}).withMessage('first name must be at least 2 chars!')
+    body('fullName')
         .trim()
+        .notEmpty().withMessage('Full name is required!')
+        .bail()
+        .isString().withMessage("Full name must contain only string!")
+        .bail()
+        .isLength({ min:2, max:40}).withMessage('Full name must be between 2 and 40 characters.')
+        .bail()
+        .matches(/^[A-Za-z ]+$/).withMessage("Full name can contain only letters and spaces")
     ,
 
-    body('last_name')
-        .optional()
-        .matches(/^[A-Za-z]+$/).withMessage('Name must contain only letters')
-        .bail()
-        .isString().withMessage("last name must be a string!")
-        .bail()
-        .isLength({ min:2, max:14}).withMessage('last name must be at least 2 chars!')
+    body('userName')
         .trim()
+        .notEmpty().withMessage('Username is required!')
+        .bail()
+        .matches(/^[a-zA-Z0-9_]+$/).withMessage("Username can contain only letters, numbers, and underscore")
+        .bail()
+        .isLength({ min:2, max:30}).withMessage('UserName must be between 2 and 30 charachters!')
+        .toLowerCase()
+        
     ,
     
     body('email')
+        .trim()
         .notEmpty().withMessage("Email is required!")
         .bail()
         .isEmail().withMessage("Invalid Email!")
-        .trim()
+        
     ,
+
     body('password')
-        .notEmpty().withMessage("password is required!")
+        .notEmpty().withMessage("Password is required!")
         .bail()
-        .isStrongPassword().withMessage("Password must be strong!")    
+        .isStrongPassword({
+            minLength: 8,
+            minLowercase: 1,
+            minUppercase: 1,
+            minNumbers: 1,
+            minSymbols: 1,
+        })
+        .withMessage(
+        "Password must contain at least 8 characters, 1 uppercase, 1 lowercase, 1 number and 1 special character."
+        )
                 
-]
-
-//email, otp
-const vrifyEmailOtpValidationRules = [
-     body('email')
-        .notEmpty().withMessage("Email is required!")
-        .bail()
-        .isEmail().withMessage("Invalid Email!")
-        .trim()
-    ,
-    body('otp')
-        .notEmpty().withMessage("OTP is required")
-        .bail()
-        .isLength({ min:6, max:6 }).withMessage("invalid otp")
-        .bail()
-        .isNumeric().withMessage("invalid OTP")    
-]
-
-//email
-const resendEmailOtpValidationRules = [
-     body('email')
-        .notEmpty().withMessage("Email is required!")
-        .bail()
-        .isEmail().withMessage("Invalid Email!")
-        .trim()
-    ,    
 ]
 
 //email password
 const loginValidationRules = [
-     body('email')
-        .notEmpty().withMessage("Email is required!")
-        .bail()
-        .isEmail().withMessage("Invalid Email!")
+     body('login')
         .trim()
-    ,
-    body('password')
-        .notEmpty().withMessage("password is required!")
-        .bail()    
-    ,
+        .notEmpty().withMessage("Email or username is required!")
+        .toLowerCase()
 
 ]
 
-//email
-const forgetPasswordValidationRules = [
-    body('email')
-        .notEmpty().withMessage("Email is required!")
-        .bail()
-        .isEmail().withMessage("Invalid Email!")
-        .trim()
-    ,
-
-]
-
-//email , otp, newPassword
-const resetPasswordValidationRuels = [
-    body('email')
-        .notEmpty().withMessage("Email is required!")
-        .bail()
-        .isEmail().withMessage("Invalid Email!")
-        .trim()
-    ,
-    body('otp')
-        .notEmpty().withMessage("OTp is required")
-        .isLength({ min:6, max:6 }).withMessage("invalid otp")
-        .bail()
-        .isNumeric().withMessage("invalid OTP")    
-    ,
-    body('newPassword')
-        .notEmpty().withMessage('New password is required!')
-        .bail()
-        .isStrongPassword().withMessage("New password must be strong!")
-]
-
-
-const validate = (req, res, next ) =>{
+const validate = ( req, res, next ) => {
 
     const errors = validationResult(req);
 
     if(!errors.isEmpty()){
         return res.status(400).json({
-            sucess:false,
+            success:false,
             errors:errors.array().map(error => error.msg)
         })
     }
-
 
     next();
 }
 
 module.exports = {
     registationValidation:[ ...registationValidationRules, validate],
-    verifyEmailOtpValidation:[ ...vrifyEmailOtpValidationRules, validate],
-    resendEmailOtpValidation:[ ...resendEmailOtpValidationRules, validate ],
     loginValidation:[ ...loginValidationRules, validate],
-    forgetPasswordValidation: [ ...forgetPasswordValidationRules, validate],
-    resetPasswordValidation:[ ...resetPasswordValidationRuels, validate]
-
 }

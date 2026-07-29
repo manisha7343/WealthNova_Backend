@@ -3,12 +3,12 @@ const app = express();
 
 //--------------- Extrenal Module/connections -------------------------
 const connectDB = require("./config/db");
-// const cron = require("./cron")
+const cron = require("./cron")
 // const rateLimiter = require("./middleware/rateLimit")
 
 //---------------- internal modules ------------------
 const auth = require("./routes/authRoutes")
-const contact = require("./routes/contactRoute");
+// const contact = require("./routes/contactRoute");
 const profile = require("./routes/userRoute");
 
 
@@ -47,7 +47,7 @@ app.set("trust proxy", 1);
 
 
     if (process.env.NODE_ENV !== 'test') {
-        const PORT = process.env.PORT || 3001;
+        const PORT = process.env.PORT || 3002;
         app.listen(PORT, ()=>{
             console.log(`server is running on ${PORT}`)
         })
