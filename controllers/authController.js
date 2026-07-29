@@ -118,7 +118,7 @@ const loginUser = async (req, res) => {
     }
 
     //----------------------------------
-
+    
     // 4. jwt token Generate
     const token = jwt.sign(
       { userId: user._id }, // user info
