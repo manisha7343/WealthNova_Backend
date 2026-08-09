@@ -6,14 +6,16 @@ const connectDB = require("./config/db");
 const cron = require("./cron")
 // const rateLimiter = require("./middleware/rateLimit")
 
+const dotenv = require("dotenv"); //a package to read and load .env file it makes the process.env object
+const cors = require("cors"); //cors
+
+
 //---------------- internal modules ------------------
 const auth = require("./routes/authRoutes")
-// const contact = require("./routes/contactRoute");
 const profile = require("./routes/userRoute");
+// const contact = require("./routes/contactRoute");
 
 
-const dotenv = require("dotenv"); //a package to read .env file
-const cors = require("cors"); //cors
 
 //for deplyment (render)
 app.set("trust proxy", 1);
@@ -21,16 +23,16 @@ app.set("trust proxy", 1);
 //###############################################################################################
 
      dotenv.config(); //to read .env file content for config()
-     if (process.env.NODE_ENV !== 'test') {
+     if (process.env.NODE_ENV !== 'test') { 
          connectDB(); //mogodb connected calles here
      }
 
 // ----------------------- MIDDLEWARES ------------------------------------------
 
-    app.use(cors()); // used this becaus the front port was different  
+    app.use(cors()); // used this becaus the frontend port was different  
     app.use(express.json()); //to read body
     app.use(express.urlencoded({ extended: true }));
-    app.use('/uploads', express.static('uploads')); // Isse photo public ho jayegi
+    // app.use('/uploads', express.static('uploads')); // Isse photo public ho jayegi
     // app.use(rateLimiter)
 
 // ----------------------- BASE ROUTES ------------------------------------
@@ -54,7 +56,6 @@ app.set("trust proxy", 1);
     }
 
 module.exports = app;
-
 
         // app.js
         // // Final URLs

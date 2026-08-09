@@ -1,17 +1,19 @@
 const express = require("express");
 const router = express.Router();
-
+//----------------------- validators ------------------------
 const {
   registationValidation,
   loginValidation,
 } = require("../validators/authValidator");
 
+//----------------------- controllers ---------------------------------
 const {
   registerUser,
   loginUser,
 } = require("../controllers/authController");
 
-//arte limiting middlware 
+//----------------------- Rate limiting --------------------------
+//Rate limiting middlware 
 // const {
 //   preAuthRateLimiter,
 //   userRateLimiter,

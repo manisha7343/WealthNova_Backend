@@ -16,7 +16,7 @@ if (process.env.NODE_ENV !== 'test') {
           blockedUntil: null
         }
       });
-      console.log("Cron running...");
+      // console.log("Cron running...");
 
       // console.log("Updated users:", result);
 
