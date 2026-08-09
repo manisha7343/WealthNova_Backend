@@ -1,5 +1,6 @@
 const { log } = require("console");
 const User = require("../model/user");
+const { RateLimiterQueue } = require("rate-limiter-flexible");
 require("dotenv").config();
 
 //########################### get profile ##############################
@@ -97,6 +98,39 @@ const updateProfile = async (req, res) => {
       success: false,
       message:
         "Something went wrong while updating your profile. Please try again later.",
+    });
+  }
+};
+
+//###################### Delet profile ####################
+const deleteProfile = async (req,res)=>{
+  try{
+
+    const user = await User.findByIdAndUpdate(
+      req.user,
+      {$set: {isDeleted:true}},
+      {new: true}
+    ) 
+
+    if(!user){
+      return res.status(404).json({
+        success:false,
+        message:"user not found!"
+      })
+    }
+
+    return res.status(200).json({
+      success:true,
+      message:"User Deleted Successfully"
+    })
+
+    
+
+  }catch (error) {
+    console.log("Error in deleting user: ", error);
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong while deleting profile"
     });
   }
 };

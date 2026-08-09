@@ -20,7 +20,7 @@ const auth = (req, res, next) => {
             const decoded = jwt.verify(token, process.env.KEY);
         
             // user req = token me se id jayegi
-            req.user = decoded.userId; 
+            req.user = decoded.userId;  //🔴 study 
             console.log("req user ------------------------------ ",req.user );
             
             
