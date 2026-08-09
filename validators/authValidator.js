@@ -44,7 +44,15 @@ const registationValidationRules = [
         })
         .withMessage(
         "Password must contain at least 8 characters, 1 uppercase, 1 lowercase, 1 number and 1 special character."
-        )
+    ),
+    
+         body('country')
+        .trim()
+        .isString().withMessage('Country is required!')
+        .bail()
+        .matches(/^[A-Za-z]+$/).withMessage('County must contain only letters')
+        .bail()
+        .isLength({ min:2, max:14}).withMessage('lastName must be a string')
                 
 ]
 

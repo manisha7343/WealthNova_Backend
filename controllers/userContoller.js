@@ -59,6 +59,7 @@ const updateProfile = async (req, res) => {
         $set:{
           fullName: fullName,
           country: country,
+          
           // profilePic: ProfilePic,
         }
       }

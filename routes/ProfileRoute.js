@@ -30,7 +30,7 @@ router.get(
 router.put(
   "/updateProfile", 
   auth, 
-  // UpdateUserValdation, 
+  UpdateUserValdation, 
   updateProfile)
 
 // ####### change password ##########################
