@@ -128,8 +128,9 @@ const loginUser = async (req, res) => {
       },
     );
 
+
     //terminal
-      console.log("Login successfully", user._id);
+      console.log("Login successfully ", user._id);
 
       return res.status(200).json({
         success: true,

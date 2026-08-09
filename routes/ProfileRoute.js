@@ -2,26 +2,36 @@ const express = require("express");
 const router = express.Router();
 const auth = require("../middleware/auth")// middleware
 const {UpdateUserValdation} = require("../validators/userValidator")
+//---------------------- Controller ---------------------
 const { 
     getProfile,  
     updateProfile,
-    uploadProfilePic
+    // uploadProfilePic
 } = require("../controllers/userContoller");
 
-const {
-  preAuthRateLimiter,
-  userRateLimiter,
-} = require("../middleware/rateLimit");
+//----------------------- Rate limiting --------------------------
+// const {
+//   preAuthRateLimiter,
+//   userRateLimiter,
+// } = require("../middleware/rateLimit");
 
-const uploadProfilePicMiddleware = require("../middleware/uploadMiddleware"); //mutler
+// const uploadProfilePicMiddleware = require("../middleware/uploadMiddleware"); //mutler
 
 
 // ########### get  profile #############################################
-router.get("/profile", auth, userRateLimiter, getProfile)
+router.get(
+  "/getProfile", 
+  auth, 
+  // userRateLimiter, 
+  getProfile)
 
 
 // ######### update profile + Delete Profile ###############
-router.put("/profile", auth, UpdateUserValdation, updateProfile)
+router.put(
+  "/updateProfile", 
+  auth, 
+  // UpdateUserValdation, 
+  updateProfile)
 
 // ####### change password ##########################
 // router.put("/change-password", auth,  changePassword)
@@ -29,6 +39,6 @@ router.put("/profile", auth, UpdateUserValdation, updateProfile)
 
 //########## multer upload route ##############
 // NAYAA ROUTE YAHAN BANA DIYA
-router.post("/upload-profile-pic", auth, userRateLimiter, uploadProfilePicMiddleware, uploadProfilePic);
+// router.post("/upload-profile-pic", auth, userRateLimiter, uploadProfilePicMiddleware, uploadProfilePic);
 
 module.exports = router;  

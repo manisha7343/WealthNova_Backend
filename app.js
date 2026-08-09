@@ -12,7 +12,7 @@ const cors = require("cors"); //cors
 
 //---------------- internal modules ------------------
 const auth = require("./routes/authRoutes")
-const profile = require("./routes/userRoute");
+const profile = require("./routes/ProfileRoute");
 // const contact = require("./routes/contactRoute");
 
 
@@ -38,7 +38,7 @@ app.set("trust proxy", 1);
 // ----------------------- BASE ROUTES ------------------------------------
 
     app.use("/api/auth", auth);
-    // app.use("/api/user", profile);
+    app.use("/api/user", profile);
     // app.use("/api/contacts", contact);
 
 
