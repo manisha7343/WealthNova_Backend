@@ -48,6 +48,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: null // Shuruat me khali rahega jab tak user khud upload na kare
     },
+    
+    isDeleted:{
+        type: Boolean,
+        default: false
+    },
 
     
 

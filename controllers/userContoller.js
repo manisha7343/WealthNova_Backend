@@ -10,7 +10,7 @@ const getProfile = async (req, res) => {
   try {
 
     //DB - user find
-    const user = await User.findById(req.user, {
+    const user = await User.findOne({_id:req.user, isDeleted: { $ne: true}}, {
       fullName: 1,
       userName: 1,
       email: 1,
@@ -23,10 +23,9 @@ const getProfile = async (req, res) => {
 
     //terminal
     if (!user) {
-      console.log("user not exits");
       res.status(404).json({
         success: false,
-        message: "user not exits",
+        message: "User not found",
         data: user,
       });
     } else {
@@ -55,7 +54,7 @@ const updateProfile = async (req, res) => {
     const {fullName, country } = req.body;
 
     //DB
-    const result = await User.findByIdAndUpdate({ _id: req.user }, 
+    const result = await User.updateOne({ _id: req.user , isDeleted: { $ne: true}}, 
       {
         $set:{
           fullName: fullName,
@@ -69,7 +68,6 @@ const updateProfile = async (req, res) => {
 
     //if user not found
     if (result.matchedCount === 0) {
-      console.log("user not found");
       return res.status(404).json({
         success: false,
         message: "user not found.",
@@ -102,30 +100,30 @@ const updateProfile = async (req, res) => {
   }
 };
 
-//###################### Delet profile ####################
-const deleteProfile = async (req,res)=>{
+//###################### Delete profile/Account ####################
+const deleteAccount = async (req,res)=>{
   try{
 
-    const user = await User.findByIdAndUpdate(
-      req.user,
-      {$set: {isDeleted:true}},
-      {new: true}
-    ) 
+    const user = await User.findOneAndUpdate(
+      { _id:req.user, isDeleted:{ $ne : true}},
+      { $set: { isDeleted:true}},
+      {new:true}
+    )
+    
 
     if(!user){
       return res.status(404).json({
         success:false,
-        message:"user not found!"
+        message:"user not found or Account already deleted!"
       })
     }
+      
 
     return res.status(200).json({
       success:true,
-      message:"User Deleted Successfully"
+      message:"User Account Deleted Successfully"
     })
-
     
-
   }catch (error) {
     console.log("Error in deleting user: ", error);
     return res.status(500).json({
@@ -166,6 +164,7 @@ const deleteProfile = async (req,res)=>{
 module.exports = {
   getProfile,
   updateProfile,
+  deleteAccount,
   // uploadProfilePic
  
 };

@@ -6,6 +6,7 @@ const {UpdateUserValdation} = require("../validators/userValidator")
 const { 
     getProfile,  
     updateProfile,
+    deleteAccount
     // uploadProfilePic
 } = require("../controllers/userContoller");
 
@@ -26,12 +27,20 @@ router.get(
   getProfile)
 
 
-// ######### update profile + Delete Profile ###############
+// ######### update profile ###############
 router.put(
   "/updateProfile", 
   auth, 
   UpdateUserValdation, 
   updateProfile)
+
+  // ################# Delete Account ###############
+router.delete(
+  "/deleteAccount", 
+  auth, 
+  // UpdateUserValdation, 
+  deleteAccount
+)
 
 // ####### change password ##########################
 // router.put("/change-password", auth,  changePassword)
