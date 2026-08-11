@@ -13,7 +13,7 @@ const cors = require("cors"); //cors
 //---------------- internal modules ------------------
 
 const auth = require("./routes/authRoutes");
-const profile = require("./routes/ProfileRoute");
+const profile = require("./routes/userRoute");
 // const contact = require("./routes/contactRoute");
 
 //for deplyment (render)

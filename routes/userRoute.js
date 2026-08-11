@@ -6,7 +6,8 @@ const {UpdateUserValdation} = require("../validators/userValidator")
 const { 
     getProfile,  
     updateProfile,
-    deleteAccount
+    deleteAccount,
+    changePassword,
     // uploadProfilePic
 } = require("../controllers/userContoller");
 
@@ -27,14 +28,15 @@ router.get(
   getProfile)
 
 
-// ######### update profile ###############
+// ################# update profile ###############
 router.put(
   "/updateProfile", 
   auth, 
-  UpdateUserValdation, 
+  UpdateUserValdation,
+  // userRateLimiter, 
   updateProfile)
 
-  // ################# Delete Account ###############
+// ################# Delete Account ###############
 router.delete(
   "/deleteAccount", 
   auth, 
@@ -43,11 +45,16 @@ router.delete(
 )
 
 // ####### change password ##########################
-// router.put("/change-password", auth,  changePassword)
+router.put(
+  "/changePassword", 
+  auth,  
+  changePassword
+)
 
 
 //########## multer upload route ##############
 // NAYAA ROUTE YAHAN BANA DIYA
 // router.post("/upload-profile-pic", auth, userRateLimiter, uploadProfilePicMiddleware, uploadProfilePic);
+
 
 module.exports = router;  
