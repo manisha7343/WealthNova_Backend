@@ -188,30 +188,61 @@ const changePassword = async (req, res) => {
 };
 
 // ################### mutler upload ###########################
-// const uploadProfilePic = async (req, res) => {
-//   try {
-//     if (!req.file) {
-//       return res.status(400).json({ success: false, message: "Koi file select nahi ki!" });
-//     }
+const uploadProfilePic = async (req, res) => {
+  try {
+    //1. check kro file request me aayi ki nhi 
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "Please select an image to upload!"
+      });
+    }
 
-//     const imagePath = req.file.path;
+    //2. get image path and store
+    const imageUrl = req.file.path || req.file.secure_url || req.file.url;
 
-//     await User.updateOne(
-//       { _id: req.user },
-//       { $set: { profilePic: imagePath } }
-//     );
+    // console.log("UPLOAD CONTROLLER HIT");
+    // console.log("FILE:", req.file);
 
-//     return res.status(200).json({
-//       success: true,
-//       message: "Profile picture uploaded successfully!",
-//       profilePic: imagePath,
-//     });
+    //3. update profilePic
+    const user = await User.findByIdAndUpdate(
+      req.user,
+      { profilePic: imageUrl },
+      { new: true },
+    ).select("-password");
 
-//   } catch (error) {
-//     console.log("Error in uploading pic: ", error);
-//     return res.status(500).json({ success: false, message: "Server error" });
-//   }
-// };
+    //4, if user not found
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found!"
+      })
+    }
+
+    // 5. PURANI IMAGE DELETE LOGIC (Yahan aayega!)
+    if (existingUser.profilePic) {
+      // URL se Public ID extract karo
+      const publicId = existingUser.profilePic.split('/').pop().split('.')[0];
+      
+      // Cloudinary se purani photo delete karo
+      await cloudinary.uploader.destroy(`wealthNova_user_profiles/${publicId}`);
+    }
+
+    //6. response
+    return res.status(200).json({
+      success: true,
+      message: "Profile picture uploaded successfully!",
+      profilePic: imageUrl,
+    });
+
+  } catch (error) {
+    console.log("Error in uploading pic: ", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+};
 // ----------------------------------------------------------
 
 module.exports = {
@@ -219,5 +250,39 @@ module.exports = {
   updateProfile,
   deleteAccount,
   changePassword,
-  // uploadProfilePic
+  uploadProfilePic
 };
+
+/* 
+==================================================================
+                 uploadProfilePic
+==================================================================
+
+1. [CLIENT/POSTMAN] 
+   - User Put request bhejta hai: /api/users/uploadProfilePic
+   - Headers: Authorization (Bearer token)
+   - Body (form-data): Key = 'profilePic', Value = File/Image
+
+2. [AUTH MIDDLEWARE]
+   - Check karta hai token valid hai ya nahi.
+   - User ID verify karke `req.user` mein set karta hai.
+   - `next()` call karke request aage bhejta hai.
+
+3. [MULTER + CLOUDINARY MIDDLEWARE]
+   - `upload.single('profilePic')` active hota hai.
+   - Form-data se 'profilePic' key wali file pick karta hai.
+   - Cloudinary par image upload karta hai.
+   - Success ke baad image ka saara data ek object banakar 
+     `req.file` mein daal deta hai (e.g., req.file.path / secure_url).
+   - Internally `next()` call karke request controller ko pass karta hai.
+
+4. [CONTROLLER: uploadProfilePic]
+   - Step A: Check karta hai `req.file` mila ya nahi.
+   - Step B: Image URL nikaalta hai (`req.file.path || req.file.secure_url`).
+   - Step C: Database mein `User.findByIdAndUpdate()` se `profilePic` field set karta hai.
+   - Step D: Response bhejta hai `res.status(200).json({ success: true, profilePic })`.
+
+5. [CLIENT/POSTMAN RESPONSE]
+   - User ko JSON response milta hai aur request successfully end ho jaati hai!
+==================================================================
+*/
