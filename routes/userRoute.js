@@ -1,7 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const auth = require("../middleware/auth")// middleware
-const {UpdateUserValdation} = require("../validators/userValidator")
+const {
+  UpdateUserValdation,
+  ChangePasswordValidationRules
+
+} = require("../validators/userValidator")
 //---------------------- Controller ---------------------
 const { 
     getProfile,  
@@ -48,6 +52,7 @@ router.delete(
 router.put(
   "/changePassword", 
   auth,  
+  ChangePasswordValidationRules,
   changePassword
 )
 

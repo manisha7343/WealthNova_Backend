@@ -1,5 +1,6 @@
 const { body, validationResult} = require("express-validator");
 
+//-------------------- UpdateUserValidationRules ------------------------
 const UpdateUserValidationRules = [
   body('fullName')
         .optional()
@@ -25,6 +26,27 @@ const UpdateUserValidationRules = [
 
 ]
 
+//-------------- ChangePasswordValidationRules ------------------------
+const ChangePasswordValidationRules = [
+    body('oldPassword')
+        .notEmpty().withMessage("Please enter your old password!")
+        
+    ,
+    body('newPassword')
+        .notEmpty().withMessage("please enter  you new password")
+        .bail()
+        .isStrongPassword({
+            minLength: 8,
+            minLowercase: 1,
+            minUppercase: 1,
+            minNumbers: 1,
+            minSymbols: 1,
+        })
+        .withMessage(
+        "Password must contain at least 8 characters, 1 uppercase, 1 lowercase, 1 number and 1 special character."
+        )
+]
+
 const validate =  (req, res, next) =>{
 
     const errors = validationResult(req);
@@ -42,6 +64,7 @@ const validate =  (req, res, next) =>{
 
 module.exports = {
 
- UpdateUserValdation:  [...UpdateUserValidationRules, validate]
+ UpdateUserValdation:  [...UpdateUserValidationRules, validate],
+ ChangePasswordValidationRules: [...ChangePasswordValidationRules, validate]
 
 }

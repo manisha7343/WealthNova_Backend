@@ -128,7 +128,7 @@ const deleteAccount = async (req, res) => {
   }
 };
 
-//###################### change password (🔴 Need anothor Rate limiting)##############
+//###################### change password (🔴 Need anothor Rate limiting)############## 🔴 validation
 const changePassword = async (req, res) => {
   try {
     //1. take body
@@ -187,7 +187,7 @@ const changePassword = async (req, res) => {
   }
 };
 
-// ################### mutler upload ###########################
+// ################### mutler upload ########################### 🔴validtaion
 const uploadProfilePic = async (req, res) => {
   try {
     //1. check kro file request me aayi ki nhi 
