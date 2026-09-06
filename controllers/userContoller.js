@@ -4,8 +4,7 @@ const User = require("../model/user");
 require("dotenv").config();
 const bcrypt = require("bcryptjs");
 
-//########################### get profile ##############################
-// wrong - projection
+//########################### get profile #############################
 
 const getProfile = async (req, res) => {
   try {
@@ -49,7 +48,6 @@ const getProfile = async (req, res) => {
 };
 
 //##################### update profile ##################
-// fail
 const updateProfile = async (req, res) => {
   try {
     const { fullName, country } = req.body;
@@ -204,6 +202,17 @@ const uploadProfilePic = async (req, res) => {
     // console.log("UPLOAD CONTROLLER HIT");
     // console.log("FILE:", req.file);
 
+    // Find user to check for old profile picture
+    const existingUser = await User.findById(req.user);
+    if (!existingUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found!"
+      });
+    }
+
+    const oldProfilePic = existingUser.profilePic;
+
     //3. update profilePic
     const user = await User.findByIdAndUpdate(
       req.user,
@@ -216,16 +225,21 @@ const uploadProfilePic = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "User not found!"
-      })
+      });
     }
 
     // 5. PURANI IMAGE DELETE LOGIC (Yahan aayega!)
-    if (existingUser.profilePic) {
-      // URL se Public ID extract karo
-      const publicId = existingUser.profilePic.split('/').pop().split('.')[0];
-      
-      // Cloudinary se purani photo delete karo
-      await cloudinary.uploader.destroy(`wealthNova_user_profiles/${publicId}`);
+    if (oldProfilePic) {
+      try {
+        const cloudinary = require("cloudinary").v2;
+        // URL se Public ID extract karo
+        const publicId = oldProfilePic.split('/').pop().split('.')[0];
+        
+        // Cloudinary se purani photo delete karo
+        await cloudinary.uploader.destroy(`wealthNova_user_profiles/${publicId}`);
+      } catch (cloudinaryErr) {
+        console.error("Cloudinary old photo deletion failed:", cloudinaryErr);
+      }
     }
 
     //6. response

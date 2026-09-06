@@ -71,13 +71,13 @@ const loginUser = async (req, res) => {
 
     // 1. user existance
     const user = await User.findOne({
-      $or: [{ email: login }, {username: login}],
+      $or: [{ email: login }, {userName: login}],
     }).select("+password");
 
     if (!user) {
       return res.status(401).json({
         success: false,
-        msg: "Invalid Credential",
+        message: "Invalid Credential",
       });
     }
 
@@ -87,13 +87,12 @@ const loginUser = async (req, res) => {
     if (user.isBlocked) {
       return res.status(403).json({
         success: false,
-        message: "Account blocked, try after 5 minutes.",
+        message: "Account blocked, try after 1 minutes.",
       });
     }
 
     // Password compare
     const isMatch = await bcrypt.compare(password, user.password);
-
     // Agar password GALAT hai
     if (!isMatch) {
       user.loginAttempts += 1;
@@ -105,7 +104,7 @@ const loginUser = async (req, res) => {
 
       return res.status(401).json({
         success: false,
-        message: `Invalid credential. Attempts left: ${3 - user.loginAttempts}`,
+        message: `Invalid credential. Attempts left: ${3 - user.loginAttempts}`
       });
     }
 
@@ -116,6 +115,8 @@ const loginUser = async (req, res) => {
       user.blockedUntil = null;
       await user.save();
     }
+
+    
 
     //----------------------------------
     

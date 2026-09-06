@@ -1,48 +1,49 @@
 const express = require("express");
 const app = express();
-// 🔴
 
-//--------------- Extrenal Module/connections -------------------------
+const dotenv = require("dotenv");
+dotenv.config(); // Environment variables sabse pehle load hona zaroori hain
+
+//--------------- External Modules & Connections -------------------------
 
 const connectDB = require("./config/db");
-const cron = require("./cron");
-// const rateLimiter = require("./middleware/rateLimit")
-const dotenv = require("dotenv"); //a package to read and load .env file it makes the process.env object
-const cors = require("cors"); //cors
+const cors = require("cors");
 
-//---------------- internal modules ------------------
+// Connect Database
+if (process.env.NODE_ENV !== "test") {
+  connectDB();
+}
+
+// Background Cron Jobs (dotenv aur DB ke baad require karein)
+require("./jobs/loginAttemptsCron");
+require("./jobs/stockSyncCron");
+
+//---------------- Internal Routes ------------------
 
 const auth = require("./routes/authRoutes");
 const profile = require("./routes/userRoute");
-// const contact = require("./routes/contactRoute");
+const stockDetailRoutes = require("./routes/stockRoute");
 
-//for deplyment (render)
+// const stocks = require("./routes/stockRoute");
+
+// Deployment setup (Render)
 app.set("trust proxy", 1);
-
-//###############################################################################################
-
-dotenv.config(); //to read .env file content for config()
-if (process.env.NODE_ENV !== "test") {
-  connectDB(); //mogodb connected calles here
-}
 
 // ----------------------- MIDDLEWARES ------------------------------------------
 
-app.use(cors()); // used this becaus the frontend port was different
-app.use(express.json()); //to read body
+app.use(cors());
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// app.use('/uploads', express.static('uploads')); // Isse photo public ho jayegi
-// app.use(rateLimiter)
 
 // ----------------------- BASE ROUTES ------------------------------------
 
 app.use("/api/auth", auth);
 app.use("/api/user", profile);
-// app.use("/api/contacts", contact);
+app.use("/api/stocks", stockDetailRoutes);
 
-//################## Global error handler ###########################
+//################## Global Error Handler ###########################
 app.use((err, req, res, next) => {
-  // Catch invalid JSON syntax error from express.json()
+  // Invalid JSON Syntax Error
   if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
     return res.status(400).json({
       success: false,
@@ -50,7 +51,7 @@ app.use((err, req, res, next) => {
     });
   }
 
-  // Example: Duplicate Key Error (MongoDB Code 11000)
+  // Duplicate Key Error (MongoDB Code 11000)
   if (err.code === 11000) {
     const field = Object.keys(err.keyValue);
     return res.status(409).json({
@@ -59,39 +60,31 @@ app.use((err, req, res, next) => {
     });
   }
 
-  //----------------------------- token -------------------------------------------
-  if (err.name === "JsonWebTokenError***************") {
-    return res.status(401).json({ success: false, message: "Invalid Token************" });
+  // JWT Token Errors
+  if (err.name === "JsonWebTokenError") {
+    return res.status(401).json({ success: false, message: "Invalid Token" });
   }
-  if (err.name === "TokenExpiredError************") {
-    return res
-      .status(401)
-      .json({
-        success: false,
-        message: "Token has expired, please login again",
-      });
+  if (err.name === "TokenExpiredError") {
+    return res.status(401).json({
+      success: false,
+      message: "Token has expired, please login again",
+    });
   }
+
+  res.status(500).json({ success: false, message: "Internal Server Error" });
 });
 
-//---------------------- Server start point ------------------------
+//---------------------- Server Start Point ------------------------
+
 app.get("/", (req, res) => {
-  res.send("user manager ApI running ");
+  res.send("Stock Market & User Manager API running");
 });
 
 if (process.env.NODE_ENV !== "test") {
   const PORT = process.env.PORT || 3002;
   app.listen(PORT, () => {
-    console.log(`server is running on ${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
   });
 }
 
 module.exports = app;
-
-// app.js
-// // Final URLs
-
-// /api/auth/register
-
-// /api/auth/login
-
-// /api/contacts
