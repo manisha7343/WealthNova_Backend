@@ -1,15 +1,14 @@
-// routes/stockDetailRoutes.js
 const express = require("express");
 const router = express.Router();
 
 const {
-  // syncStockFundamentals,
-  syncBatchStocks, // <-- Check 1: Controller import hona chahiye
+  syncStockFundamentals,
+  fetchAndSaveBatchStock,
   getAllStockDetails,
-} = require("../controllers/stockDetailController"); // <-- Path sahi ho
+} = require("../controllers/stockDetailController");
 
-// router.post("/sync-fundamentals", syncStockFundamentals);
-router.post("/sync-batch", syncBatchStocks); // <-- Check 2: Ye line honi chahiye
+router.post("/single-stock", syncStockFundamentals);
+router.post("/batch-stock", fetchAndSaveBatchStock);
 router.get("/fundamentals", getAllStockDetails);
 
 module.exports = router;
