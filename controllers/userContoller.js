@@ -188,29 +188,29 @@ const changePassword = async (req, res) => {
 // ################### mutler upload ########################### 🔴validtaion
 const uploadProfilePic = async (req, res) => {
   try {
-    //1. check kro file request me aayi ki nhi 
+    //1. check kro file request me aayi ki nhi
     if (!req.file) {
       return res.status(400).json({
         success: false,
-        message: "Please select an image to upload!"
+        message: "Please select an image to upload!",
       });
     }
 
     //2. get image path and store
     const imageUrl = req.file.path || req.file.secure_url || req.file.url;
 
+    // ---------testing ------------------
     // console.log("UPLOAD CONTROLLER HIT");
     // console.log("FILE:", req.file);
     console.log("IMAGE URL:", imageUrl);
-    console.log("SAVED PROFILE PIC:", user.profilePic);
-
+    // ------------------------------------ 
 
     // Find user to check for old profile picture
     const existingUser = await User.findById(req.user);
     if (!existingUser) {
       return res.status(404).json({
         success: false,
-        message: "User not found!"
+        message: "User not found!",
       });
     }
 
@@ -222,12 +222,15 @@ const uploadProfilePic = async (req, res) => {
       { profilePic: imageUrl },
       { new: true },
     ).select("-password");
+    // ---------------------------- # testing ----------------------
+    console.log("SAVED PROFILE PIC:", user.profilePic);
+    // ----------------------------------------
 
     //4, if user not found
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: "User not found!"
+        message: "User not found!",
       });
     }
 
@@ -236,10 +239,12 @@ const uploadProfilePic = async (req, res) => {
       try {
         const cloudinary = require("cloudinary").v2;
         // URL se Public ID extract karo
-        const publicId = oldProfilePic.split('/').pop().split('.')[0];
-        
+        const publicId = oldProfilePic.split("/").pop().split(".")[0];
+
         // Cloudinary se purani photo delete karo
-        await cloudinary.uploader.destroy(`wealthNova_user_profiles/${publicId}`);
+        await cloudinary.uploader.destroy(
+          `wealthNova_user_profiles/${publicId}`,
+        );
       } catch (cloudinaryErr) {
         console.error("Cloudinary old photo deletion failed:", cloudinaryErr);
       }
@@ -251,12 +256,11 @@ const uploadProfilePic = async (req, res) => {
       message: "Profile picture uploaded successfully!",
       profilePic: imageUrl,
     });
-
   } catch (error) {
     console.log("Error in uploading pic: ", error);
     return res.status(500).json({
       success: false,
-      message: "Server error"
+      message: "Server error",
     });
   }
 };
@@ -267,7 +271,7 @@ module.exports = {
   updateProfile,
   deleteAccount,
   changePassword,
-  uploadProfilePic
+  uploadProfilePic,
 };
 
 /* 
