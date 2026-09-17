@@ -16,7 +16,7 @@ const getProfile = async (req, res) => {
         userName: 1,
         email: 1,
         country: 1,
-        // profilePic: 1, //photo
+        profilePic: 1, //photo
       },
     );
 
@@ -200,7 +200,8 @@ const uploadProfilePic = async (req, res) => {
     const imageUrl = req.file.path || req.file.secure_url || req.file.url;
 
     // console.log("UPLOAD CONTROLLER HIT");
-    // console.log("FILE:", req.file);
+    console.log("FILE:", req.file);
+    console.log("IMAGE URL:", imageUrl);
 
     // Find user to check for old profile picture
     const existingUser = await User.findById(req.user);
