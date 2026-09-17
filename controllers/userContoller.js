@@ -200,8 +200,10 @@ const uploadProfilePic = async (req, res) => {
     const imageUrl = req.file.path || req.file.secure_url || req.file.url;
 
     // console.log("UPLOAD CONTROLLER HIT");
-    console.log("FILE:", req.file);
+    // console.log("FILE:", req.file);
     console.log("IMAGE URL:", imageUrl);
+    console.log("SAVED PROFILE PIC:", user.profilePic);
+
 
     // Find user to check for old profile picture
     const existingUser = await User.findById(req.user);
