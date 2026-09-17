@@ -46,13 +46,13 @@ const registationValidationRules = [
         "Password must contain at least 8 characters, 1 uppercase, 1 lowercase, 1 number and 1 special character."
     ),
     
-         body('country')
+    body('country')
         .trim()
         .isString().withMessage('Country is required!')
         .bail()
-        .matches(/^[A-Za-z]+$/).withMessage('County must contain only letters')
+        .matches(/^[A-Za-z\s]+$/).withMessage('Country must contain only letters and spaces')
         .bail()
-        .isLength({ min:2, max:14}).withMessage('lastName must be a string')
+        .isLength({ min:2, max:50}).withMessage('Country must be between 2 and 50 characters')
                 
 ]
 
@@ -70,9 +70,11 @@ const validate = ( req, res, next ) => {
     const errors = validationResult(req);
 
     if(!errors.isEmpty()){
+        const errorList = errors.array().map(error => error.msg);
         return res.status(400).json({
-            success:false,
-            errors:errors.array().map(error => error.msg)
+            success: false,
+            message: errorList[0] || "Validation failed",
+            errors: errorList
         })
     }
 
