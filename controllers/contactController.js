@@ -8,7 +8,7 @@ const createContact = async (req, res) => {
   try {
     const { name, phone, email, isFavorite, tags } = req.body;
     
-    //DB - create contact 🔴
+    //DB - create contact 🔴3
 
     const contactData = {
       user: req.user,
