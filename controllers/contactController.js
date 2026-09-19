@@ -1,4 +1,4 @@
-const { log } = require("console");
+// const { log } = require("console");
 const Contact = require("../model/contact");
 const mongoose = require("mongoose");
 

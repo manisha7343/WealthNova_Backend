@@ -2,26 +2,14 @@ const express = require("express");
 const router = express.Router();
 
 const {
-  syncSingleStock,
-  fetchAndSaveBatch,
-  manualAddStock
+  manualAddStock,
 } = require("../controllers/stockDetailController");
 
 // ==========================================
-// DB DUMP / SYNC ROUTES
+// MANUAL STOCK ADD ROUTE
 // ==========================================
 
-// 1. Single Stock Sync with optional force refresh 
-// POST http://localhost:5000/api/stocks/sync/ICICIBANK
-// POST http://localhost:5000/api/stocks/sync/ICICIBANK?force=true
-router.post("/sync/:symbol", syncSingleStock);
-
-// 2. Batch Sync for multiple symbols
-// POST http://localhost:5000/api/stocks/sync-batch
-router.post("/sync-batch", fetchAndSaveBatch);
-
-
-
+// POST http://localhost:3002/api/stocks/manual-add
 router.post("/manual-add", manualAddStock);
 
 module.exports = router;
