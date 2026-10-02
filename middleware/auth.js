@@ -12,15 +12,15 @@ const auth = (req, res, next) => {
         return res.status(401).json({msg: "No token. access denied"})     
     }
 
-    //3.token extract (removed the Beare word and get teh token (0 = bearer 1 = token)) 
-    const token = authHeader.split(" ")[1];
+    //3.token extract (handles Bearer <token> or raw token) 
+    const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7).trim() : authHeader.trim();
     try{
 
             //verify token
             const decoded = jwt.verify(token, process.env.KEY);
         
             // user req = token me se id jayegi
-            req.user = decoded.userId;  //🔴 study 
+            req.user = decoded.userId || decoded.id;
             console.log("req user ------------------------------ ",req.user );
             
             

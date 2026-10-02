@@ -27,6 +27,7 @@ const ipoRoutes = require("./routes/ipoRoute");
 const marketRoutes = require("./routes/marketRoute");
 const newsRoutes = require("./routes/newsRoute");
 const cryptoRoutes = require("./routes/cryptoRoute");
+const portfolioRoutes = require("./routes/portfolioRoute");
 
 // Deployment setup (Render)
 app.set("trust proxy", 1);
@@ -46,6 +47,7 @@ app.use("/api/market", marketRoutes);
 app.use("/api/news", newsRoutes);
 app.use("/api/ipo", ipoRoutes);
 app.use("/api/crypto", cryptoRoutes);
+app.use("/api/portfolio", portfolioRoutes);
 
 //################## Global Error Handler ###########################
 app.use((err, req, res, next) => {
