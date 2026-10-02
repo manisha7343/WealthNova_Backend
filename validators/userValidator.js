@@ -16,11 +16,11 @@ const UpdateUserValidationRules = [
     body('country')
         .optional()
         .trim()
-        .isString().withMessage('Country is required!')
+        .isString().withMessage('Country must be a valid string!')
         .bail()
-        .matches(/^[A-Za-z]+$/).withMessage('County must contain only letters')
+        .matches(/^[A-Za-z ]+$/).withMessage('Country must contain only letters and spaces')
         .bail()
-        .isLength({ min:2, max:14}).withMessage('lastName must be a string')
+        .isLength({ min:2, max:50}).withMessage('Country must be between 2 and 50 characters')
         
     
 

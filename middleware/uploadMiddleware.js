@@ -1,30 +1,23 @@
 // middleware/uploadMiddleware.js
 const multer = require('multer');
-const storage = require('../config/multerConfig'); //  Config se storage setting li
+const storage = require('../config/multerConfig');
 
-// Multer ko setting ke sath taiyar kiya
-const upload = multer({ storage: storage });
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+});
 
- 
-// -------------- option 1 ---------------------
-// Frontend se 'profilePic' ke naam se aane wali ek single photo ko handle karne ka middleware
-//its a middlware this internally return runs a middlware
+const uploadProfilePicMiddleware = (req, res, next) => {
+  upload.single('profilePic')(req, res, (err) => {
+    if (err) {
+      console.error("Multer / Cloudinary upload error:", err);
+      return res.status(400).json({
+        success: false,
+        message: err.message || "Failed to upload image. Allowed formats: JPG, PNG, WEBP (Max 5MB).",
+      });
+    }
+    next();
+  });
+};
 
-
-const uploadProfilePicMiddleware = upload.single('profilePic');
-
-//---------------- option 2 ------------------------------
-// Direct Multer function call (Jisme req, res, next dikhta hai)
-
-// const uploadProfilePicMiddleware = (req, res, next) => {
-//     upload.single('profilePic')(req, res, (err) => {
-//         if (err) {
-//             return res.status(400).json({ message: "File upload error" });
-//         }
-//         next(); // Agle controller par bhejo
-//     });
-// };
-
-//--------------------------------------------------
-// Isko export kar diya taaki routes me use ho sake
 module.exports = uploadProfilePicMiddleware;

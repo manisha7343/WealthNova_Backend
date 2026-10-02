@@ -12,7 +12,8 @@ const {
     updateProfile,
     deleteAccount,
     changePassword,
-    uploadProfilePic
+    uploadProfilePic,
+    deleteProfilePic
 } = require("../controllers/userContoller");
 
 //----------------------- Rate limiting --------------------------
@@ -25,28 +26,17 @@ const uploadProfilePicMiddleware = require("../middleware/uploadMiddleware"); //
 
 
 // ########### get  profile #############################################
-router.get(
-  "/getProfile", 
-  auth, 
-  // userRateLimiter, 
-  getProfile)
-
+router.get("/getProfile", auth, getProfile);
+router.get("/profile", auth, getProfile);
 
 // ################# update profile ###############
-router.put(
-  "/updateProfile", 
-  auth, 
-  UpdateUserValdation,
-  // userRateLimiter, 
-  updateProfile)
+router.put("/updateProfile", auth, UpdateUserValdation, updateProfile);
+router.put("/profile", auth, UpdateUserValdation, updateProfile);
 
 // ################# Delete Account ###############
-router.delete(
-  "/deleteAccount", 
-  auth, 
-  // UpdateUserValdation, 
-  deleteAccount
-)
+router.delete("/deleteAccount", auth, deleteAccount);
+router.delete("/deleteProfile", auth, deleteAccount);
+router.delete("/profile", auth, deleteAccount);
 
 // ####### change password ##########################
 router.put(
@@ -58,12 +48,23 @@ router.put(
 
 
 //########## multer upload route ##############
-// NAYAA ROUTE YAHAN BANA DIYA
 router.put(
   "/uploadProfilePic",
   auth,
   uploadProfilePicMiddleware,
   uploadProfilePic
+)
+
+//########## Delete/Remove Profile Picture ##############
+router.delete(
+  "/deleteProfilePic",
+  auth,
+  deleteProfilePic
+)
+router.delete(
+  "/removeProfilePic",
+  auth,
+  deleteProfilePic
 )
 
 

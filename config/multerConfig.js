@@ -1,7 +1,7 @@
 require("dotenv").config();
 
 const multer = require("multer");
-const cloudinary = require("cloudinary");
+const cloudinary = require("cloudinary").v2;
 const CloudinaryStorage = require("multer-storage-cloudinary");
 
 // Cloudinary configuration
@@ -13,12 +13,11 @@ cloudinary.config({
 
 // Cloudinary storage
 const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
+  cloudinary: { v2: cloudinary },
   params: {
     folder: "wealthNova_user_profiles",
-    allowed_formats: ["jpg", "jpeg", "png"],
+    transformation: [{ width: 800, height: 800, crop: "limit" }],
   },
-
 });
 
 module.exports = storage;

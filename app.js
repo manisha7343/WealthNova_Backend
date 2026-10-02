@@ -16,15 +16,17 @@ if (process.env.NODE_ENV !== "test") {
 
 // Background Cron Jobs (dotenv aur DB ke baad require karein)
 require("./jobs/loginAttemptsCron");
-require("./jobs/stockSyncCron");
+
 
 //---------------- Internal Routes ------------------
 
 const auth = require("./routes/authRoutes");
 const profile = require("./routes/userRoute");
-const stockDetailRoutes = require("./routes/stockRoute");
-
-// const stocks = require("./routes/stockRoute");
+const stockDetailRoutes = require("./routes/stockRoute"); // data dump 
+const ipoRoutes = require("./routes/ipoRoute"); 
+const marketRoutes = require("./routes/marketRoute");
+const newsRoutes = require("./routes/newsRoute");
+const cryptoRoutes = require("./routes/cryptoRoute");
 
 // Deployment setup (Render)
 app.set("trust proxy", 1);
@@ -40,6 +42,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/auth", auth);
 app.use("/api/user", profile);
 app.use("/api/stocks", stockDetailRoutes);
+app.use("/api/market", marketRoutes);
+app.use("/api/news", newsRoutes);
+app.use("/api/ipo", ipoRoutes);
+app.use("/api/crypto", cryptoRoutes);
 
 //################## Global Error Handler ###########################
 app.use((err, req, res, next) => {
@@ -71,7 +77,8 @@ app.use((err, req, res, next) => {
     });
   }
 
-  res.status(500).json({ success: false, message: "Internal Server Error" });
+  console.error("Global Error Caught:", err);
+  res.status(err.status || 500).json({ success: false, message: err.message || "Internal Server Error" });
 });
 
 //---------------------- Server Start Point ------------------------

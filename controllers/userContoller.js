@@ -51,48 +51,43 @@ const getProfile = async (req, res) => {
 const updateProfile = async (req, res) => {
   try {
     const { fullName, country } = req.body;
+    const updateData = {};
+    if (fullName !== undefined) updateData.fullName = fullName.trim();
+    if (country !== undefined) updateData.country = country.trim();
 
-    //DB
-    const result = await User.updateOne(
+    const user = await User.findOneAndUpdate(
       { _id: req.user, isDeleted: { $ne: true } },
-      {
-        $set: {
-          fullName: fullName,
-          country: country,
+      { $set: updateData },
+      { returnDocument: "after" }
+    ).select("-password");
 
-          // profilePic: ProfilePic,
-        },
-      },
-    );
-
-    //if user not found
-    if (result.matchedCount === 0) {
+    if (!user) {
       return res.status(404).json({
         success: false,
-        message: "user not found.",
+        message: "User not found or account deactivated.",
       });
     }
 
-    //if data not chngaes or the same data is sent
-    if (result.modifiedCount === 0) {
-      return res.status(200).json({
-        success: true,
-        message: "No changes made to Profile!.",
-      });
-    }
-
-    console.log("User updated successfully");
+    console.log("User updated successfully:", user._id);
     return res.status(200).json({
       success: true,
       message: "User profile updated successfully!",
+      user: {
+        _id: user._id,
+        fullName: user.fullName,
+        userName: user.userName,
+        email: user.email,
+        country: user.country,
+        profilePic: user.profilePic,
+      },
     });
   } catch (error) {
-    console.log("Error in upadting user : ", error);
+    console.log("Error in updating user : ", error);
 
     return res.status(500).json({
       success: false,
       message:
-        "Something went wrong while updating your profile. Please try again later.",
+        error.message || "Something went wrong while updating your profile. Please try again later.",
     });
   }
 };
@@ -103,16 +98,17 @@ const deleteAccount = async (req, res) => {
     const user = await User.findOneAndUpdate(
       { _id: req.user, isDeleted: { $ne: true } },
       { $set: { isDeleted: true } },
-      { new: true },
+      { returnDocument: "after" }
     );
 
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: "user not found or Account already deleted!",
+        message: "User not found or Account already deleted!",
       });
     }
 
+    console.log("User account deleted successfully:", user._id);
     return res.status(200).json({
       success: true,
       message: "User Account Deleted Successfully",
@@ -220,7 +216,7 @@ const uploadProfilePic = async (req, res) => {
     const user = await User.findByIdAndUpdate(
       req.user,
       { profilePic: imageUrl },
-      { new: true },
+      { returnDocument: "after" },
     ).select("-password");
     // ---------------------------- # testing ----------------------
     console.log("SAVED PROFILE PIC:", user.profilePic);
@@ -234,19 +230,16 @@ const uploadProfilePic = async (req, res) => {
       });
     }
 
-    // 5. PURANI IMAGE DELETE LOGIC (Yahan aayega!)
-    if (oldProfilePic) {
+    // 5. PURANI IMAGE DELETE LOGIC
+    if (oldProfilePic && typeof oldProfilePic === "string" && oldProfilePic.includes("cloudinary.com")) {
       try {
         const cloudinary = require("cloudinary").v2;
-        // URL se Public ID extract karo
-        const publicId = oldProfilePic.split("/").pop().split(".")[0];
-
-        // Cloudinary se purani photo delete karo
-        await cloudinary.uploader.destroy(
-          `wealthNova_user_profiles/${publicId}`,
-        );
+        const parts = oldProfilePic.split("/");
+        const filename = parts.pop().split(".")[0];
+        const folder = parts.includes("wealthNova_user_profiles") ? "wealthNova_user_profiles/" : "";
+        await cloudinary.uploader.destroy(`${folder}${filename}`);
       } catch (cloudinaryErr) {
-        console.error("Cloudinary old photo deletion failed:", cloudinaryErr);
+        console.warn("Cloudinary old photo cleanup non-fatal warning:", cloudinaryErr.message);
       }
     }
 
@@ -257,10 +250,55 @@ const uploadProfilePic = async (req, res) => {
       profilePic: imageUrl,
     });
   } catch (error) {
-    console.log("Error in uploading pic: ", error);
+    console.error("Error in uploading pic: ", error);
     return res.status(500).json({
       success: false,
-      message: "Server error",
+      message: error.message || "Server error while uploading profile picture",
+    });
+  }
+};
+
+// ################### Remove / Delete Profile Picture ###########################
+const deleteProfilePic = async (req, res) => {
+  try {
+    const user = await User.findById(req.user);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found!",
+      });
+    }
+
+    const oldProfilePic = user.profilePic;
+
+    // Delete image from Cloudinary if it exists
+    if (oldProfilePic && typeof oldProfilePic === "string" && oldProfilePic.includes("cloudinary.com")) {
+      try {
+        const cloudinary = require("cloudinary").v2;
+        const parts = oldProfilePic.split("/");
+        const filename = parts.pop().split(".")[0];
+        const folder = parts.includes("wealthNova_user_profiles") ? "wealthNova_user_profiles/" : "";
+        await cloudinary.uploader.destroy(`${folder}${filename}`);
+      } catch (cloudinaryErr) {
+        console.warn("Cloudinary photo deletion warning:", cloudinaryErr.message);
+      }
+    }
+
+    // Set profilePic to empty string
+    user.profilePic = "";
+    await user.save();
+
+    console.log("Profile pic removed successfully for user:", req.user);
+    return res.status(200).json({
+      success: true,
+      message: "Profile picture removed successfully!",
+      profilePic: "",
+    });
+  } catch (error) {
+    console.error("Error in deleteProfilePic:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to remove profile picture",
     });
   }
 };
@@ -272,6 +310,7 @@ module.exports = {
   deleteAccount,
   changePassword,
   uploadProfilePic,
+  deleteProfilePic,
 };
 
 /* 
